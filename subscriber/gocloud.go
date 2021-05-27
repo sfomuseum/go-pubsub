@@ -18,7 +18,7 @@ func init() {
 
 	for _, scheme := range pubsub.DefaultURLMux().SubscriptionSchemes() {
 
-		err := sfom_subscriber.RegisterSubscriber(ctx, scheme, NewGoCloudSubscriber)
+		err := RegisterSubscriber(ctx, scheme, NewGoCloudSubscriber)
 
 		if err != nil {
 			panic(err)

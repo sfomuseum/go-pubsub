@@ -16,7 +16,7 @@ func init() {
 
 	for _, scheme := range pubsub.DefaultURLMux().TopicSchemes() {
 
-		err := sfom_publisher.RegisterPublisher(ctx, scheme, NewGoCloudPublisher)
+		err := RegisterPublisher(ctx, scheme, NewGoCloudPublisher)
 
 		if err != nil {
 			panic(err)
