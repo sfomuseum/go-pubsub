@@ -3,8 +3,9 @@ package publisher
 import (
 	"context"
 	"fmt"
-	"github.com/go-redis/redis/v8"
 	"net/url"
+
+	"github.com/go-redis/redis/v8"	
 )
 
 type RedisPublisher struct {
