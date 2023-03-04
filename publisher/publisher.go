@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/aaronland/go-roster"	
+	"github.com/aaronland/go-roster"
 )
 
 type Publisher interface {

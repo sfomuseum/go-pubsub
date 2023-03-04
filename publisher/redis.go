@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/go-redis/redis/v8"	
+	"github.com/go-redis/redis/v8"
 )
 
 type RedisPublisher struct {
