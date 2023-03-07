@@ -57,7 +57,13 @@ func (p *RedisPublisher) Publish(ctx context.Context, msg string) error {
 	}
 
 	cmd := p.redis_client.Publish(ctx, p.redis_channel, msg)
-	return cmd.Err()
+	err := cmd.Err()
+
+	if err != nil {
+		return fmt.Errorf("Failed to publish message, %w", err)
+	}
+	
+	return nil
 }
 
 func (p *RedisPublisher) Close() error {
