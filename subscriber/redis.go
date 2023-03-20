@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/go-redis/redis/v8"	
+	"github.com/go-redis/redis/v8"
 )
 
 type RedisSubscriber struct {
@@ -59,7 +59,7 @@ func (s *RedisSubscriber) Listen(ctx context.Context, messages_ch chan string) e
 		if err != nil {
 			return fmt.Errorf("Failed to receive message, %w", err)
 		}
-		
+
 		if msg, _ := i.(*redis.Message); msg != nil {
 			messages_ch <- msg.Payload
 		}

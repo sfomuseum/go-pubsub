@@ -62,7 +62,7 @@ func (p *RedisPublisher) Publish(ctx context.Context, msg string) error {
 	if err != nil {
 		return fmt.Errorf("Failed to publish message, %w", err)
 	}
-	
+
 	return nil
 }
 
