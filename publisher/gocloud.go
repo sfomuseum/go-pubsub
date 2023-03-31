@@ -20,7 +20,7 @@ func init() {
 
 	ctx := context.Background()
 
-	RegisterPublisher(ctx, "awsqs-creds", NewGoCloudPublisher)
+	RegisterPublisher(ctx, "awssqs-creds", NewGoCloudPublisher)
 	
 	for _, scheme := range pubsub.DefaultURLMux().TopicSchemes() {
 
