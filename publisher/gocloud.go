@@ -63,6 +63,8 @@ func NewGoCloudPublisher(ctx context.Context, uri string) (Publisher, error) {
 			return nil, fmt.Errorf("Failed to create AWS session, %w", err)
 		}
 
+		// https://gocloud.dev/howto/pubsub/publish/#sqs-ctor
+		
 		topic = awssnssqs.OpenSQSTopic(ctx, sess, queue_url, nil)
 
 	default:

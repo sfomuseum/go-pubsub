@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/aaronland/go-aws-session v0.1.0
 	github.com/aaronland/go-roster v1.0.0
-	github.com/aws/aws-sdk-go v1.44.200
+	github.com/aws/aws-sdk-go v1.44.264
 	github.com/go-redis/redis/v8 v8.11.5
 	gocloud.dev v0.29.0
 )
