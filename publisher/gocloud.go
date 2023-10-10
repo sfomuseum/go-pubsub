@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"sync"
 
 	aa_session "github.com/aaronland/go-aws-session"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -16,20 +17,58 @@ type GoCloudPublisher struct {
 	topic *pubsub.Topic
 }
 
+// In principle this could also be done with a sync.OnceFunc call but that will
+// require that everyone uses Go 1.21 (whose package import changes broke everything)
+// which is literally days old as I write this. So maybe a few releases after 1.21.
+//
+// Also, _not_ using a sync.OnceFunc means we can call RegisterSchemes multiple times
+// if and when multiple gomail-sender instances register themselves.
+
+var register_mu = new(sync.RWMutex)
+var register_map = map[string]bool{}
+
 func init() {
 
 	ctx := context.Background()
+	err := RegisterSchemes(ctx)
 
-	RegisterPublisher(ctx, "awssqs-creds", NewGoCloudPublisher)
-	
+	if err != nil {
+		panic(err)
+	}
+}
+
+// RegisterGoCloudSchemes will explicitly register all the schemes associated with the `GoCloudPublisher` interface.
+func RegisterGoCloudSchemes(ctx context.Context) error {
+
+	register_mu.Lock()
+	defer register_mu.Unlock()
+
+	to_register := []string{
+		"awssqs-creds",
+	}
+
 	for _, scheme := range pubsub.DefaultURLMux().TopicSchemes() {
+		to_register = append(to_register, scheme)
+	}
+
+	for _, scheme := range to_register {
+
+		_, exists := register_map[scheme]
+
+		if exists {
+			continue
+		}
 
 		err := RegisterPublisher(ctx, scheme, NewGoCloudPublisher)
 
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("Failed to register blob writer for '%s', %w", scheme, err)
 		}
+
+		register_map[scheme] = true
 	}
+
+	return nil
 }
 
 func NewGoCloudPublisher(ctx context.Context, uri string) (Publisher, error) {
@@ -50,7 +89,7 @@ func NewGoCloudPublisher(ctx context.Context, uri string) (Publisher, error) {
 		region := q.Get("region")
 		credentials := q.Get("credentials")
 		queue_url := q.Get("queue-url")
-		
+
 		cfg, err := aa_session.NewConfigWithCredentialsAndRegion(credentials, region)
 
 		if err != nil {
@@ -64,7 +103,7 @@ func NewGoCloudPublisher(ctx context.Context, uri string) (Publisher, error) {
 		}
 
 		// https://gocloud.dev/howto/pubsub/publish/#sqs-ctor
-		
+
 		topic = awssnssqs.OpenSQSTopic(ctx, sess, queue_url, nil)
 
 	default:
