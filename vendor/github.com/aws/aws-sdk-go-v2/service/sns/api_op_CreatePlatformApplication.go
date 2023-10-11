@@ -4,44 +4,40 @@ package sns
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
 	"github.com/aws/aws-sdk-go-v2/aws/signer/v4"
+	internalauth "github.com/aws/aws-sdk-go-v2/internal/auth"
+	smithyendpoints "github.com/aws/smithy-go/endpoints"
 	"github.com/aws/smithy-go/middleware"
 	smithyhttp "github.com/aws/smithy-go/transport/http"
 )
 
-// Creates a platform application object for one of the supported push notification
-// services, such as APNS and GCM (Firebase Cloud Messaging), to which devices and
-// mobile apps may register. You must specify PlatformPrincipal and
+// Creates a platform application object for one of the supported push
+// notification services, such as APNS and GCM (Firebase Cloud Messaging), to which
+// devices and mobile apps may register. You must specify PlatformPrincipal and
 // PlatformCredential attributes when using the CreatePlatformApplication action.
 // PlatformPrincipal and PlatformCredential are received from the notification
 // service.
+//   - For ADM , PlatformPrincipal is client id and PlatformCredential is client
+//     secret .
+//   - For Baidu , PlatformPrincipal is API key and PlatformCredential is secret
+//     key .
+//   - For APNS and APNS_SANDBOX using certificate credentials, PlatformPrincipal
+//     is SSL certificate and PlatformCredential is private key .
+//   - For APNS and APNS_SANDBOX using token credentials, PlatformPrincipal is
+//     signing key ID and PlatformCredential is signing key .
+//   - For GCM (Firebase Cloud Messaging), there is no PlatformPrincipal and the
+//     PlatformCredential is API key .
+//   - For MPNS , PlatformPrincipal is TLS certificate and PlatformCredential is
+//     private key .
+//   - For WNS , PlatformPrincipal is Package Security Identifier and
+//     PlatformCredential is secret key .
 //
-// * For ADM, PlatformPrincipal is client id and PlatformCredential is
-// client secret.
-//
-// * For Baidu, PlatformPrincipal is API key and PlatformCredential
-// is secret key.
-//
-// * For APNS and APNS_SANDBOX using certificate credentials,
-// PlatformPrincipal is SSL certificate and PlatformCredential is private key.
-//
-// *
-// For APNS and APNS_SANDBOX using token credentials, PlatformPrincipal is signing
-// key ID and PlatformCredential is signing key.
-//
-// * For GCM (Firebase Cloud
-// Messaging), there is no PlatformPrincipal and the PlatformCredential is API
-// key.
-//
-// * For MPNS, PlatformPrincipal is TLS certificate and PlatformCredential is
-// private key.
-//
-// * For WNS, PlatformPrincipal is Package Security Identifier and
-// PlatformCredential is secret key.
-//
-// You can use the returned
-// PlatformApplicationArn as an attribute for the CreatePlatformEndpoint action.
+// You can use the returned PlatformApplicationArn as an attribute for the
+// CreatePlatformEndpoint action.
 func (c *Client) CreatePlatformApplication(ctx context.Context, params *CreatePlatformApplicationInput, optFns ...func(*Options)) (*CreatePlatformApplicationOutput, error) {
 	if params == nil {
 		params = &CreatePlatformApplicationInput{}
@@ -60,15 +56,15 @@ func (c *Client) CreatePlatformApplication(ctx context.Context, params *CreatePl
 // Input for CreatePlatformApplication action.
 type CreatePlatformApplicationInput struct {
 
-	// For a list of attributes, see SetPlatformApplicationAttributes
-	// (https://docs.aws.amazon.com/sns/latest/api/API_SetPlatformApplicationAttributes.html).
+	// For a list of attributes, see SetPlatformApplicationAttributes (https://docs.aws.amazon.com/sns/latest/api/API_SetPlatformApplicationAttributes.html)
+	// .
 	//
 	// This member is required.
 	Attributes map[string]string
 
-	// Application names must be made up of only uppercase and lowercase ASCII letters,
-	// numbers, underscores, hyphens, and periods, and must be between 1 and 256
-	// characters long.
+	// Application names must be made up of only uppercase and lowercase ASCII
+	// letters, numbers, underscores, hyphens, and periods, and must be between 1 and
+	// 256 characters long.
 	//
 	// This member is required.
 	Name *string
@@ -104,6 +100,9 @@ func (c *Client) addOperationCreatePlatformApplicationMiddlewares(stack *middlew
 	if err != nil {
 		return err
 	}
+	if err = addlegacyEndpointContextSetter(stack, options); err != nil {
+		return err
+	}
 	if err = addSetLoggerMiddleware(stack, options); err != nil {
 		return err
 	}
@@ -131,7 +130,7 @@ func (c *Client) addOperationCreatePlatformApplicationMiddlewares(stack *middlew
 	if err = awsmiddleware.AddRecordResponseTiming(stack); err != nil {
 		return err
 	}
-	if err = addClientUserAgent(stack); err != nil {
+	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
 	if err = smithyhttp.AddErrorCloseResponseBodyMiddleware(stack); err != nil {
@@ -140,10 +139,16 @@ func (c *Client) addOperationCreatePlatformApplicationMiddlewares(stack *middlew
 	if err = smithyhttp.AddCloseResponseBodyMiddleware(stack); err != nil {
 		return err
 	}
+	if err = addCreatePlatformApplicationResolveEndpointMiddleware(stack, options); err != nil {
+		return err
+	}
 	if err = addOpCreatePlatformApplicationValidationMiddleware(stack); err != nil {
 		return err
 	}
 	if err = stack.Initialize.Add(newServiceMetadataMiddleware_opCreatePlatformApplication(options.Region), middleware.Before); err != nil {
+		return err
+	}
+	if err = awsmiddleware.AddRecursionDetection(stack); err != nil {
 		return err
 	}
 	if err = addRequestIDRetrieverMiddleware(stack); err != nil {
@@ -153,6 +158,9 @@ func (c *Client) addOperationCreatePlatformApplicationMiddlewares(stack *middlew
 		return err
 	}
 	if err = addRequestResponseLogging(stack, options); err != nil {
+		return err
+	}
+	if err = addendpointDisableHTTPSMiddleware(stack, options); err != nil {
 		return err
 	}
 	return nil
@@ -165,4 +173,127 @@ func newServiceMetadataMiddleware_opCreatePlatformApplication(region string) *aw
 		SigningName:   "sns",
 		OperationName: "CreatePlatformApplication",
 	}
+}
+
+type opCreatePlatformApplicationResolveEndpointMiddleware struct {
+	EndpointResolver EndpointResolverV2
+	BuiltInResolver  builtInParameterResolver
+}
+
+func (*opCreatePlatformApplicationResolveEndpointMiddleware) ID() string {
+	return "ResolveEndpointV2"
+}
+
+func (m *opCreatePlatformApplicationResolveEndpointMiddleware) HandleSerialize(ctx context.Context, in middleware.SerializeInput, next middleware.SerializeHandler) (
+	out middleware.SerializeOutput, metadata middleware.Metadata, err error,
+) {
+	if awsmiddleware.GetRequiresLegacyEndpoints(ctx) {
+		return next.HandleSerialize(ctx, in)
+	}
+
+	req, ok := in.Request.(*smithyhttp.Request)
+	if !ok {
+		return out, metadata, fmt.Errorf("unknown transport type %T", in.Request)
+	}
+
+	if m.EndpointResolver == nil {
+		return out, metadata, fmt.Errorf("expected endpoint resolver to not be nil")
+	}
+
+	params := EndpointParameters{}
+
+	m.BuiltInResolver.ResolveBuiltIns(&params)
+
+	var resolvedEndpoint smithyendpoints.Endpoint
+	resolvedEndpoint, err = m.EndpointResolver.ResolveEndpoint(ctx, params)
+	if err != nil {
+		return out, metadata, fmt.Errorf("failed to resolve service endpoint, %w", err)
+	}
+
+	req.URL = &resolvedEndpoint.URI
+
+	for k := range resolvedEndpoint.Headers {
+		req.Header.Set(
+			k,
+			resolvedEndpoint.Headers.Get(k),
+		)
+	}
+
+	authSchemes, err := internalauth.GetAuthenticationSchemes(&resolvedEndpoint.Properties)
+	if err != nil {
+		var nfe *internalauth.NoAuthenticationSchemesFoundError
+		if errors.As(err, &nfe) {
+			// if no auth scheme is found, default to sigv4
+			signingName := "sns"
+			signingRegion := m.BuiltInResolver.(*builtInResolver).Region
+			ctx = awsmiddleware.SetSigningName(ctx, signingName)
+			ctx = awsmiddleware.SetSigningRegion(ctx, signingRegion)
+
+		}
+		var ue *internalauth.UnSupportedAuthenticationSchemeSpecifiedError
+		if errors.As(err, &ue) {
+			return out, metadata, fmt.Errorf(
+				"This operation requests signer version(s) %v but the client only supports %v",
+				ue.UnsupportedSchemes,
+				internalauth.SupportedSchemes,
+			)
+		}
+	}
+
+	for _, authScheme := range authSchemes {
+		switch authScheme.(type) {
+		case *internalauth.AuthenticationSchemeV4:
+			v4Scheme, _ := authScheme.(*internalauth.AuthenticationSchemeV4)
+			var signingName, signingRegion string
+			if v4Scheme.SigningName == nil {
+				signingName = "sns"
+			} else {
+				signingName = *v4Scheme.SigningName
+			}
+			if v4Scheme.SigningRegion == nil {
+				signingRegion = m.BuiltInResolver.(*builtInResolver).Region
+			} else {
+				signingRegion = *v4Scheme.SigningRegion
+			}
+			if v4Scheme.DisableDoubleEncoding != nil {
+				// The signer sets an equivalent value at client initialization time.
+				// Setting this context value will cause the signer to extract it
+				// and override the value set at client initialization time.
+				ctx = internalauth.SetDisableDoubleEncoding(ctx, *v4Scheme.DisableDoubleEncoding)
+			}
+			ctx = awsmiddleware.SetSigningName(ctx, signingName)
+			ctx = awsmiddleware.SetSigningRegion(ctx, signingRegion)
+			break
+		case *internalauth.AuthenticationSchemeV4A:
+			v4aScheme, _ := authScheme.(*internalauth.AuthenticationSchemeV4A)
+			if v4aScheme.SigningName == nil {
+				v4aScheme.SigningName = aws.String("sns")
+			}
+			if v4aScheme.DisableDoubleEncoding != nil {
+				// The signer sets an equivalent value at client initialization time.
+				// Setting this context value will cause the signer to extract it
+				// and override the value set at client initialization time.
+				ctx = internalauth.SetDisableDoubleEncoding(ctx, *v4aScheme.DisableDoubleEncoding)
+			}
+			ctx = awsmiddleware.SetSigningName(ctx, *v4aScheme.SigningName)
+			ctx = awsmiddleware.SetSigningRegion(ctx, v4aScheme.SigningRegionSet[0])
+			break
+		case *internalauth.AuthenticationSchemeNone:
+			break
+		}
+	}
+
+	return next.HandleSerialize(ctx, in)
+}
+
+func addCreatePlatformApplicationResolveEndpointMiddleware(stack *middleware.Stack, options Options) error {
+	return stack.Serialize.Insert(&opCreatePlatformApplicationResolveEndpointMiddleware{
+		EndpointResolver: options.EndpointResolverV2,
+		BuiltInResolver: &builtInResolver{
+			Region:       options.Region,
+			UseDualStack: options.EndpointOptions.UseDualStackEndpoint,
+			UseFIPS:      options.EndpointOptions.UseFIPSEndpoint,
+			Endpoint:     options.BaseEndpoint,
+		},
+	}, "ResolveEndpoint", middleware.After)
 }

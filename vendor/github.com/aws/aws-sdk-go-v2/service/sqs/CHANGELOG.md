@@ -1,3 +1,69 @@
+# v1.24.1 (2023-08-01)
+
+* No change notes available for this release.
+
+# v1.24.0 (2023-07-31)
+
+* **Feature**: Adds support for smithy-modeled endpoint resolution. A new rules-based endpoint resolution will be added to the SDK which will supercede and deprecate existing endpoint resolution. Specifically, EndpointResolver will be deprecated while BaseEndpoint and EndpointResolverV2 will take its place. For more information, please see the Endpoints section in our Developer Guide.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.23.4 (2023-07-28)
+
+* **Documentation**: Documentation changes related to SQS APIs.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.23.3 (2023-07-13)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.23.2 (2023-06-15)
+
+* No change notes available for this release.
+
+# v1.23.1 (2023-06-13)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.23.0 (2023-06-06)
+
+* **Feature**: Amazon SQS adds three new APIs - StartMessageMoveTask, CancelMessageMoveTask, and ListMessageMoveTasks to automate redriving messages from dead-letter queues to source queues or a custom destination.
+
+# v1.22.0 (2023-05-05)
+
+* **Feature**: Revert previous SQS protocol change.
+
+# v1.21.0 (2023-05-04)
+
+* **Feature**: This release enables customers to call SQS using AWS JSON-1.0 protocol.
+
+# v1.20.9 (2023-04-24)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.20.8 (2023-04-10)
+
+* No change notes available for this release.
+
+# v1.20.7 (2023-04-07)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.20.6 (2023-03-21)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.20.5 (2023-03-10)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.20.4 (2023-02-22)
+
+* **Bug Fix**: Prevent nil pointer dereference when retrieving error codes.
+
+# v1.20.3 (2023-02-20)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
 # v1.20.2 (2023-02-03)
 
 * **Dependency Update**: Updated to the latest SDK module versions

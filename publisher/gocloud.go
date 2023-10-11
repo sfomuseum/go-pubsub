@@ -19,17 +19,34 @@ type GoCloudPublisher struct {
 func init() {
 
 	ctx := context.Background()
+	err := RegisterGoCloudPublishers(ctx)
 
-	RegisterPublisher(ctx, "awssqs-creds", NewGoCloudPublisher)
-	
+	if err != nil {
+		panic(err)
+	}
+}
+
+// RegisterGoCloudPublishers will explicitly register all the schemes associated with the `GoCloudPublisher` interface.
+func RegisterGoCloudPublishers(ctx context.Context) error {
+
+	to_register := []string{
+		"awssqs-creds",
+	}
+
 	for _, scheme := range pubsub.DefaultURLMux().TopicSchemes() {
+		to_register = append(to_register, scheme)
+	}
+
+	for _, scheme := range to_register {
 
 		err := RegisterPublisher(ctx, scheme, NewGoCloudPublisher)
 
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("Failed to register blob writer for '%s', %w", scheme, err)
 		}
 	}
+
+	return nil
 }
 
 func NewGoCloudPublisher(ctx context.Context, uri string) (Publisher, error) {
@@ -50,7 +67,7 @@ func NewGoCloudPublisher(ctx context.Context, uri string) (Publisher, error) {
 		region := q.Get("region")
 		credentials := q.Get("credentials")
 		queue_url := q.Get("queue-url")
-		
+
 		cfg, err := aa_session.NewConfigWithCredentialsAndRegion(credentials, region)
 
 		if err != nil {
@@ -64,7 +81,7 @@ func NewGoCloudPublisher(ctx context.Context, uri string) (Publisher, error) {
 		}
 
 		// https://gocloud.dev/howto/pubsub/publish/#sqs-ctor
-		
+
 		topic = awssnssqs.OpenSQSTopic(ctx, sess, queue_url, nil)
 
 	default:

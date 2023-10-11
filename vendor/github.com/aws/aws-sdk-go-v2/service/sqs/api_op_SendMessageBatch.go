@@ -4,32 +4,34 @@ package sqs
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
 	"github.com/aws/aws-sdk-go-v2/aws/signer/v4"
+	internalauth "github.com/aws/aws-sdk-go-v2/internal/auth"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
+	smithyendpoints "github.com/aws/smithy-go/endpoints"
 	"github.com/aws/smithy-go/middleware"
 	smithyhttp "github.com/aws/smithy-go/transport/http"
 )
 
-// Delivers up to ten messages to the specified queue. This is a batch version of
-// SendMessage. For a FIFO queue, multiple messages within a single batch are
-// enqueued in the order they are sent. The result of sending each message is
-// reported individually in the response. Because the batch request can result in a
-// combination of successful and unsuccessful actions, you should check for batch
-// errors even when the call returns an HTTP status code of 200. The maximum
-// allowed individual message size and the maximum total payload size (the sum of
-// the individual lengths of all of the batched messages) are both 256 KB (262,144
-// bytes). A message can include only XML, JSON, and unformatted text. The
-// following Unicode characters are allowed: #x9 | #xA | #xD | #x20 to #xD7FF |
-// #xE000 to #xFFFD | #x10000 to #x10FFFF Any characters not included in this list
-// will be rejected. For more information, see the W3C specification for characters
-// (http://www.w3.org/TR/REC-xml/#charsets). If you don't specify the DelaySeconds
-// parameter for an entry, Amazon SQS uses the default value for the queue. Some
-// actions take lists of parameters. These lists are specified using the param.n
-// notation. Values of n are integers starting from 1. For example, a parameter
-// list with two elements looks like this: &AttributeName.1=first
-//
-// &AttributeName.2=second
+// You can use SendMessageBatch to send up to 10 messages to the specified queue
+// by assigning either identical or different values to each message (or by not
+// assigning values at all). This is a batch version of SendMessage . For a FIFO
+// queue, multiple messages within a single batch are enqueued in the order they
+// are sent. The result of sending each message is reported individually in the
+// response. Because the batch request can result in a combination of successful
+// and unsuccessful actions, you should check for batch errors even when the call
+// returns an HTTP status code of 200 . The maximum allowed individual message size
+// and the maximum total payload size (the sum of the individual lengths of all of
+// the batched messages) are both 256 KiB (262,144 bytes). A message can include
+// only XML, JSON, and unformatted text. The following Unicode characters are
+// allowed: #x9 | #xA | #xD | #x20 to #xD7FF | #xE000 to #xFFFD | #x10000 to
+// #x10FFFF Any characters not included in this list will be rejected. For more
+// information, see the W3C specification for characters (http://www.w3.org/TR/REC-xml/#charsets)
+// . If you don't specify the DelaySeconds parameter for an entry, Amazon SQS uses
+// the default value for the queue.
 func (c *Client) SendMessageBatch(ctx context.Context, params *SendMessageBatchInput, optFns ...func(*Options)) (*SendMessageBatchOutput, error) {
 	if params == nil {
 		params = &SendMessageBatchInput{}
@@ -66,8 +68,8 @@ type SendMessageBatchInput struct {
 // BatchResultErrorEntry tag if the message fails.
 type SendMessageBatchOutput struct {
 
-	// A list of BatchResultErrorEntry items with error details about each message that
-	// can't be enqueued.
+	// A list of BatchResultErrorEntry items with error details about each message
+	// that can't be enqueued.
 	//
 	// This member is required.
 	Failed []types.BatchResultErrorEntry
@@ -90,6 +92,9 @@ func (c *Client) addOperationSendMessageBatchMiddlewares(stack *middleware.Stack
 	}
 	err = stack.Deserialize.Add(&awsAwsquery_deserializeOpSendMessageBatch{}, middleware.After)
 	if err != nil {
+		return err
+	}
+	if err = addlegacyEndpointContextSetter(stack, options); err != nil {
 		return err
 	}
 	if err = addSetLoggerMiddleware(stack, options); err != nil {
@@ -119,7 +124,7 @@ func (c *Client) addOperationSendMessageBatchMiddlewares(stack *middleware.Stack
 	if err = awsmiddleware.AddRecordResponseTiming(stack); err != nil {
 		return err
 	}
-	if err = addClientUserAgent(stack); err != nil {
+	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
 	if err = smithyhttp.AddErrorCloseResponseBodyMiddleware(stack); err != nil {
@@ -131,10 +136,16 @@ func (c *Client) addOperationSendMessageBatchMiddlewares(stack *middleware.Stack
 	if err = addValidateSendMessageBatchChecksum(stack, options); err != nil {
 		return err
 	}
+	if err = addSendMessageBatchResolveEndpointMiddleware(stack, options); err != nil {
+		return err
+	}
 	if err = addOpSendMessageBatchValidationMiddleware(stack); err != nil {
 		return err
 	}
 	if err = stack.Initialize.Add(newServiceMetadataMiddleware_opSendMessageBatch(options.Region), middleware.Before); err != nil {
+		return err
+	}
+	if err = awsmiddleware.AddRecursionDetection(stack); err != nil {
 		return err
 	}
 	if err = addRequestIDRetrieverMiddleware(stack); err != nil {
@@ -144,6 +155,9 @@ func (c *Client) addOperationSendMessageBatchMiddlewares(stack *middleware.Stack
 		return err
 	}
 	if err = addRequestResponseLogging(stack, options); err != nil {
+		return err
+	}
+	if err = addendpointDisableHTTPSMiddleware(stack, options); err != nil {
 		return err
 	}
 	return nil
@@ -156,4 +170,127 @@ func newServiceMetadataMiddleware_opSendMessageBatch(region string) *awsmiddlewa
 		SigningName:   "sqs",
 		OperationName: "SendMessageBatch",
 	}
+}
+
+type opSendMessageBatchResolveEndpointMiddleware struct {
+	EndpointResolver EndpointResolverV2
+	BuiltInResolver  builtInParameterResolver
+}
+
+func (*opSendMessageBatchResolveEndpointMiddleware) ID() string {
+	return "ResolveEndpointV2"
+}
+
+func (m *opSendMessageBatchResolveEndpointMiddleware) HandleSerialize(ctx context.Context, in middleware.SerializeInput, next middleware.SerializeHandler) (
+	out middleware.SerializeOutput, metadata middleware.Metadata, err error,
+) {
+	if awsmiddleware.GetRequiresLegacyEndpoints(ctx) {
+		return next.HandleSerialize(ctx, in)
+	}
+
+	req, ok := in.Request.(*smithyhttp.Request)
+	if !ok {
+		return out, metadata, fmt.Errorf("unknown transport type %T", in.Request)
+	}
+
+	if m.EndpointResolver == nil {
+		return out, metadata, fmt.Errorf("expected endpoint resolver to not be nil")
+	}
+
+	params := EndpointParameters{}
+
+	m.BuiltInResolver.ResolveBuiltIns(&params)
+
+	var resolvedEndpoint smithyendpoints.Endpoint
+	resolvedEndpoint, err = m.EndpointResolver.ResolveEndpoint(ctx, params)
+	if err != nil {
+		return out, metadata, fmt.Errorf("failed to resolve service endpoint, %w", err)
+	}
+
+	req.URL = &resolvedEndpoint.URI
+
+	for k := range resolvedEndpoint.Headers {
+		req.Header.Set(
+			k,
+			resolvedEndpoint.Headers.Get(k),
+		)
+	}
+
+	authSchemes, err := internalauth.GetAuthenticationSchemes(&resolvedEndpoint.Properties)
+	if err != nil {
+		var nfe *internalauth.NoAuthenticationSchemesFoundError
+		if errors.As(err, &nfe) {
+			// if no auth scheme is found, default to sigv4
+			signingName := "sqs"
+			signingRegion := m.BuiltInResolver.(*builtInResolver).Region
+			ctx = awsmiddleware.SetSigningName(ctx, signingName)
+			ctx = awsmiddleware.SetSigningRegion(ctx, signingRegion)
+
+		}
+		var ue *internalauth.UnSupportedAuthenticationSchemeSpecifiedError
+		if errors.As(err, &ue) {
+			return out, metadata, fmt.Errorf(
+				"This operation requests signer version(s) %v but the client only supports %v",
+				ue.UnsupportedSchemes,
+				internalauth.SupportedSchemes,
+			)
+		}
+	}
+
+	for _, authScheme := range authSchemes {
+		switch authScheme.(type) {
+		case *internalauth.AuthenticationSchemeV4:
+			v4Scheme, _ := authScheme.(*internalauth.AuthenticationSchemeV4)
+			var signingName, signingRegion string
+			if v4Scheme.SigningName == nil {
+				signingName = "sqs"
+			} else {
+				signingName = *v4Scheme.SigningName
+			}
+			if v4Scheme.SigningRegion == nil {
+				signingRegion = m.BuiltInResolver.(*builtInResolver).Region
+			} else {
+				signingRegion = *v4Scheme.SigningRegion
+			}
+			if v4Scheme.DisableDoubleEncoding != nil {
+				// The signer sets an equivalent value at client initialization time.
+				// Setting this context value will cause the signer to extract it
+				// and override the value set at client initialization time.
+				ctx = internalauth.SetDisableDoubleEncoding(ctx, *v4Scheme.DisableDoubleEncoding)
+			}
+			ctx = awsmiddleware.SetSigningName(ctx, signingName)
+			ctx = awsmiddleware.SetSigningRegion(ctx, signingRegion)
+			break
+		case *internalauth.AuthenticationSchemeV4A:
+			v4aScheme, _ := authScheme.(*internalauth.AuthenticationSchemeV4A)
+			if v4aScheme.SigningName == nil {
+				v4aScheme.SigningName = aws.String("sqs")
+			}
+			if v4aScheme.DisableDoubleEncoding != nil {
+				// The signer sets an equivalent value at client initialization time.
+				// Setting this context value will cause the signer to extract it
+				// and override the value set at client initialization time.
+				ctx = internalauth.SetDisableDoubleEncoding(ctx, *v4aScheme.DisableDoubleEncoding)
+			}
+			ctx = awsmiddleware.SetSigningName(ctx, *v4aScheme.SigningName)
+			ctx = awsmiddleware.SetSigningRegion(ctx, v4aScheme.SigningRegionSet[0])
+			break
+		case *internalauth.AuthenticationSchemeNone:
+			break
+		}
+	}
+
+	return next.HandleSerialize(ctx, in)
+}
+
+func addSendMessageBatchResolveEndpointMiddleware(stack *middleware.Stack, options Options) error {
+	return stack.Serialize.Insert(&opSendMessageBatchResolveEndpointMiddleware{
+		EndpointResolver: options.EndpointResolverV2,
+		BuiltInResolver: &builtInResolver{
+			Region:       options.Region,
+			UseDualStack: options.EndpointOptions.UseDualStackEndpoint,
+			UseFIPS:      options.EndpointOptions.UseFIPSEndpoint,
+			Endpoint:     options.BaseEndpoint,
+		},
+	}, "ResolveEndpoint", middleware.After)
 }

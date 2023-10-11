@@ -26,14 +26,14 @@ func (e *AuthorizationErrorException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *AuthorizationErrorException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "AuthorizationError"
 	}
 	return *e.ErrorCodeOverride
 }
 func (e *AuthorizationErrorException) ErrorFault() smithy.ErrorFault { return smithy.FaultClient }
 
-// Two or more batch entries in the request have the same Id.
+// Two or more batch entries in the request have the same Id .
 type BatchEntryIdsNotDistinctException struct {
 	Message *string
 
@@ -52,7 +52,7 @@ func (e *BatchEntryIdsNotDistinctException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *BatchEntryIdsNotDistinctException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "BatchEntryIdsNotDistinct"
 	}
 	return *e.ErrorCodeOverride
@@ -78,7 +78,7 @@ func (e *BatchRequestTooLongException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *BatchRequestTooLongException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "BatchRequestTooLong"
 	}
 	return *e.ErrorCodeOverride
@@ -105,7 +105,7 @@ func (e *ConcurrentAccessException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *ConcurrentAccessException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "ConcurrentAccess"
 	}
 	return *e.ErrorCodeOverride
@@ -131,7 +131,7 @@ func (e *EmptyBatchRequestException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *EmptyBatchRequestException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "EmptyBatchRequest"
 	}
 	return *e.ErrorCodeOverride
@@ -157,7 +157,7 @@ func (e *EndpointDisabledException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *EndpointDisabledException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "EndpointDisabled"
 	}
 	return *e.ErrorCodeOverride
@@ -185,7 +185,7 @@ func (e *FilterPolicyLimitExceededException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *FilterPolicyLimitExceededException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "FilterPolicyLimitExceeded"
 	}
 	return *e.ErrorCodeOverride
@@ -213,7 +213,7 @@ func (e *InternalErrorException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *InternalErrorException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "InternalError"
 	}
 	return *e.ErrorCodeOverride
@@ -239,7 +239,7 @@ func (e *InvalidBatchEntryIdException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *InvalidBatchEntryIdException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "InvalidBatchEntryId"
 	}
 	return *e.ErrorCodeOverride
@@ -266,7 +266,7 @@ func (e *InvalidParameterException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *InvalidParameterException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "InvalidParameter"
 	}
 	return *e.ErrorCodeOverride
@@ -293,7 +293,7 @@ func (e *InvalidParameterValueException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *InvalidParameterValueException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "ParameterValueInvalid"
 	}
 	return *e.ErrorCodeOverride
@@ -320,15 +320,15 @@ func (e *InvalidSecurityException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *InvalidSecurityException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "InvalidSecurity"
 	}
 	return *e.ErrorCodeOverride
 }
 func (e *InvalidSecurityException) ErrorFault() smithy.ErrorFault { return smithy.FaultClient }
 
-// The ciphertext references a key that doesn't exist or that you don't have access
-// to.
+// The ciphertext references a key that doesn't exist or that you don't have
+// access to.
 type KMSAccessDeniedException struct {
 	Message *string
 
@@ -347,7 +347,7 @@ func (e *KMSAccessDeniedException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *KMSAccessDeniedException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "KMSAccessDenied"
 	}
 	return *e.ErrorCodeOverride
@@ -374,18 +374,17 @@ func (e *KMSDisabledException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *KMSDisabledException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "KMSDisabled"
 	}
 	return *e.ErrorCodeOverride
 }
 func (e *KMSDisabledException) ErrorFault() smithy.ErrorFault { return smithy.FaultClient }
 
-// The request was rejected because the state of the specified resource isn't valid
-// for this request. For more information, see How Key State Affects Use of a
-// Customer Master Key
-// (https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the
-// Key Management Service Developer Guide.
+// The request was rejected because the state of the specified resource isn't
+// valid for this request. For more information, see How Key State Affects Use of
+// a Customer Master Key (https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html)
+// in the Key Management Service Developer Guide.
 type KMSInvalidStateException struct {
 	Message *string
 
@@ -404,7 +403,7 @@ func (e *KMSInvalidStateException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *KMSInvalidStateException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "KMSInvalidState"
 	}
 	return *e.ErrorCodeOverride
@@ -431,7 +430,7 @@ func (e *KMSNotFoundException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *KMSNotFoundException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "KMSNotFound"
 	}
 	return *e.ErrorCodeOverride
@@ -457,7 +456,7 @@ func (e *KMSOptInRequired) ErrorMessage() string {
 	return *e.Message
 }
 func (e *KMSOptInRequired) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "KMSOptInRequired"
 	}
 	return *e.ErrorCodeOverride
@@ -465,8 +464,7 @@ func (e *KMSOptInRequired) ErrorCode() string {
 func (e *KMSOptInRequired) ErrorFault() smithy.ErrorFault { return smithy.FaultClient }
 
 // The request was denied due to request throttling. For more information about
-// throttling, see Limits
-// (https://docs.aws.amazon.com/kms/latest/developerguide/limits.html#requests-per-second)
+// throttling, see Limits (https://docs.aws.amazon.com/kms/latest/developerguide/limits.html#requests-per-second)
 // in the Key Management Service Developer Guide.
 type KMSThrottlingException struct {
 	Message *string
@@ -486,7 +484,7 @@ func (e *KMSThrottlingException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *KMSThrottlingException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "KMSThrottling"
 	}
 	return *e.ErrorCodeOverride
@@ -512,7 +510,7 @@ func (e *NotFoundException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *NotFoundException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "NotFound"
 	}
 	return *e.ErrorCodeOverride
@@ -540,7 +538,7 @@ func (e *OptedOutException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *OptedOutException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "OptedOut"
 	}
 	return *e.ErrorCodeOverride
@@ -566,7 +564,7 @@ func (e *PlatformApplicationDisabledException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *PlatformApplicationDisabledException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "PlatformApplicationDisabled"
 	}
 	return *e.ErrorCodeOverride
@@ -595,15 +593,15 @@ func (e *ResourceNotFoundException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *ResourceNotFoundException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "ResourceNotFound"
 	}
 	return *e.ErrorCodeOverride
 }
 func (e *ResourceNotFoundException) ErrorFault() smithy.ErrorFault { return smithy.FaultClient }
 
-// A tag has been added to a resource with the same ARN as a deleted resource. Wait
-// a short while and then retry the operation.
+// A tag has been added to a resource with the same ARN as a deleted resource.
+// Wait a short while and then retry the operation.
 type StaleTagException struct {
 	Message *string
 
@@ -622,7 +620,7 @@ func (e *StaleTagException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *StaleTagException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "StaleTag"
 	}
 	return *e.ErrorCodeOverride
@@ -649,7 +647,7 @@ func (e *SubscriptionLimitExceededException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *SubscriptionLimitExceededException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "SubscriptionLimitExceeded"
 	}
 	return *e.ErrorCodeOverride
@@ -677,7 +675,7 @@ func (e *TagLimitExceededException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *TagLimitExceededException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "TagLimitExceeded"
 	}
 	return *e.ErrorCodeOverride
@@ -704,7 +702,7 @@ func (e *TagPolicyException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *TagPolicyException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "TagPolicy"
 	}
 	return *e.ErrorCodeOverride
@@ -731,7 +729,7 @@ func (e *ThrottledException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *ThrottledException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "Throttled"
 	}
 	return *e.ErrorCodeOverride
@@ -757,7 +755,7 @@ func (e *TooManyEntriesInBatchRequestException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *TooManyEntriesInBatchRequestException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "TooManyEntriesInBatchRequest"
 	}
 	return *e.ErrorCodeOverride
@@ -785,7 +783,7 @@ func (e *TopicLimitExceededException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *TopicLimitExceededException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "TopicLimitExceeded"
 	}
 	return *e.ErrorCodeOverride
@@ -812,7 +810,7 @@ func (e *UserErrorException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *UserErrorException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "UserError"
 	}
 	return *e.ErrorCodeOverride
@@ -838,7 +836,7 @@ func (e *ValidationException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *ValidationException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "ValidationException"
 	}
 	return *e.ErrorCodeOverride
@@ -866,7 +864,7 @@ func (e *VerificationException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *VerificationException) ErrorCode() string {
-	if e.ErrorCodeOverride == nil {
+	if e == nil || e.ErrorCodeOverride == nil {
 		return "VerificationException"
 	}
 	return *e.ErrorCodeOverride

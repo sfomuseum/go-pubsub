@@ -16,7 +16,11 @@ type RedisPublisher struct {
 
 func init() {
 	ctx := context.Background()
-	RegisterPublisher(ctx, "redis", NewRedisPublisher)
+	RegisterRedisPublishers(ctx)
+}
+
+func RegisterRedisPublishers(ctx context.Context) error {
+	return RegisterPublisher(ctx, "redis", NewRedisPublisher)
 }
 
 func NewRedisPublisher(ctx context.Context, uri string) (Publisher, error) {
