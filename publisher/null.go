@@ -10,7 +10,11 @@ type NullPublisher struct {
 
 func init() {
 	ctx := context.Background()
-	RegisterPublisher(ctx, "null", NewNullPublisher)
+	RegisterNullPublishers(ctx)
+}
+
+func RegisterNullPublishers(ctx context.Context) error {
+	return RegisterPublisher(ctx, "null", NewNullPublisher)
 }
 
 func NewNullPublisher(ctx context.Context, uri string) (Publisher, error) {

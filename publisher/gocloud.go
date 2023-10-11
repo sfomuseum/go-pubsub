@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"sync"
 
 	aa_session "github.com/aaronland/go-aws-session"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -17,31 +16,18 @@ type GoCloudPublisher struct {
 	topic *pubsub.Topic
 }
 
-// In principle this could also be done with a sync.OnceFunc call but that will
-// require that everyone uses Go 1.21 (whose package import changes broke everything)
-// which is literally days old as I write this. So maybe a few releases after 1.21.
-//
-// Also, _not_ using a sync.OnceFunc means we can call RegisterSchemes multiple times
-// if and when multiple gomail-sender instances register themselves.
-
-var register_mu = new(sync.RWMutex)
-var register_map = map[string]bool{}
-
 func init() {
 
 	ctx := context.Background()
-	err := RegisterSchemes(ctx)
+	err := RegisterGoCloudPublishers(ctx)
 
 	if err != nil {
 		panic(err)
 	}
 }
 
-// RegisterGoCloudSchemes will explicitly register all the schemes associated with the `GoCloudPublisher` interface.
-func RegisterGoCloudSchemes(ctx context.Context) error {
-
-	register_mu.Lock()
-	defer register_mu.Unlock()
+// RegisterGoCloudPublishers will explicitly register all the schemes associated with the `GoCloudPublisher` interface.
+func RegisterGoCloudPublishers(ctx context.Context) error {
 
 	to_register := []string{
 		"awssqs-creds",
@@ -53,19 +39,11 @@ func RegisterGoCloudSchemes(ctx context.Context) error {
 
 	for _, scheme := range to_register {
 
-		_, exists := register_map[scheme]
-
-		if exists {
-			continue
-		}
-
 		err := RegisterPublisher(ctx, scheme, NewGoCloudPublisher)
 
 		if err != nil {
 			return fmt.Errorf("Failed to register blob writer for '%s', %w", scheme, err)
 		}
-
-		register_map[scheme] = true
 	}
 
 	return nil

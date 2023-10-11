@@ -15,7 +15,11 @@ type StdoutPublisher struct {
 
 func init() {
 	ctx := context.Background()
-	RegisterPublisher(ctx, "stdout", NewStdoutPublisher)
+	RegisterStdoutPublishers(ctx)
+}
+
+func RegisterStdoutPublishers(ctx context.Context) error {
+	return RegisterPublisher(ctx, "stdout", NewStdoutPublisher)
 }
 
 func NewStdoutPublisher(ctx context.Context, uri string) (Publisher, error) {
