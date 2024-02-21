@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -19,7 +20,7 @@ func init() {
 	RegisterRedisSubscribers(ctx)
 }
 
-func RegisterRedisSubscribers(ctx context.Context) error {	
+func RegisterRedisSubscribers(ctx context.Context) error {
 	return RegisterSubscriber(ctx, "redis", NewRedisSubscriber)
 }
 
@@ -33,11 +34,27 @@ func NewRedisSubscriber(ctx context.Context, uri string) (Subscriber, error) {
 
 	q := u.Query()
 
-	host := q.Get("host")
-	port := q.Get("port")
+	host := "localhost"
+	port := 6379
+
+	if q.Has("host") {
+		host = q.Get("host")
+	}
+
+	if q.Has("port") {
+		str_port := q.Get("port")
+
+		v, err := strconv.Atoi(str_port)
+
+		if err != nil {
+			return nil, fmt.Errorf("Failed to parse ?port= parameter, %w", err)
+		}
+
+		port = v
+	}
 	channel := q.Get("channel")
 
-	addr := fmt.Sprintf("%s:%s", host, port)
+	addr := fmt.Sprintf("%s:%d", host, port)
 
 	redis_client := redis.NewClient(&redis.Options{
 		Addr: addr,
