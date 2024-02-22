@@ -29,7 +29,7 @@ func main() {
 	}
 
 	defer sub.Close()
-	
+
 	msg_ch := make(chan string)
 	done_ch := make(chan bool)
 
