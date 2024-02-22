@@ -2,10 +2,6 @@
 
 Go package to provide a common interface for abstract publish and subscribe operations.
 
-## Important
-
-Ideally this package would/could be replaced by the [GoCloud pubsub package](https://gocloud.dev/howto/pubsub/) but it does not support Redis.
-
 ## Documentation
 
 Documentation is incomplete at this time.
