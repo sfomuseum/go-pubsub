@@ -37,14 +37,50 @@ func RunWithOptions(ctx context.Context, opts *RunOptions, logger *slog.Logger) 
 
 	defer pub.Close()
 
-	scanner := bufio.NewScanner(os.Stdin)
+	switch opts.Mode {
+	case "stdin":
 
-	for scanner.Scan() {
-		pub.Publish(ctx, scanner.Text())
-	}
+		scanner := bufio.NewScanner(os.Stdin)
 
-	if scanner.Err() != nil {
-		return fmt.Errorf("Failed to scan")
+		for scanner.Scan() {
+			pub.Publish(ctx, scanner.Text())
+		}
+
+		if scanner.Err() != nil {
+			return fmt.Errorf("Failed to scan")
+		}
+
+	case "readline":
+
+		logger.Info("Type messages to publish")
+
+		for {
+
+			// Please fix me: This treats spaces in the input
+			// as separate messages...
+
+			var input string
+			fmt.Scanln(&input)
+
+			if input == "." {
+				break
+			}
+
+			err := pub.Publish(ctx, input)
+
+			if err != nil {
+				return fmt.Errorf("Failed to publish message, %w", err)
+			}
+
+		}
+
+	default:
+
+		err := pub.Publish(ctx, opts.Message)
+
+		if err != nil {
+			return fmt.Errorf("Failed to publish message, %w", err)
+		}
 	}
 
 	return nil

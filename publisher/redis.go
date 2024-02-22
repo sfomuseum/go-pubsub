@@ -60,7 +60,7 @@ func NewRedisPublisher(ctx context.Context, uri string) (Publisher, error) {
 		return nil, fmt.Errorf("Empty or missing ?channel= parameter")
 	}
 
-	endpoint := fmt.Sprintf("%s:%s", host, port)
+	endpoint := fmt.Sprintf("%s:%d", host, port)
 
 	client := redis.NewClient(&redis.Options{
 		Addr: endpoint,
