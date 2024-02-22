@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/sfomuseum/go-pubsub"
 )
 
 type RedisPublisher struct {
@@ -33,9 +35,30 @@ func NewRedisPublisher(ctx context.Context, uri string) (Publisher, error) {
 
 	q := u.Query()
 
-	host := q.Get("host")
-	port := q.Get("port")
+	host := pubsub.REDIS_DEFAULT_HOST
+	port := pubsub.REDIS_DEFAULT_PORT
+
+	if q.Has("host") {
+		host = q.Get("host")
+	}
+
+	if q.Has("port") {
+		str_port := q.Get("port")
+
+		v, err := strconv.Atoi(str_port)
+
+		if err != nil {
+			return nil, fmt.Errorf("Failed to parse ?port= parameter, %w", err)
+		}
+
+		port = v
+	}
+
 	channel := q.Get("channel")
+
+	if channel == "" {
+		return nil, fmt.Errorf("Empty or missing ?channel= parameter")
+	}
 
 	endpoint := fmt.Sprintf("%s:%s", host, port)
 

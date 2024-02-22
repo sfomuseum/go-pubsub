@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/sfomuseum/go-pubsub"
 )
 
 type RedisSubscriber struct {
@@ -19,7 +21,7 @@ func init() {
 	RegisterRedisSubscribers(ctx)
 }
 
-func RegisterRedisSubscribers(ctx context.Context) error {	
+func RegisterRedisSubscribers(ctx context.Context) error {
 	return RegisterSubscriber(ctx, "redis", NewRedisSubscriber)
 }
 
@@ -28,16 +30,37 @@ func NewRedisSubscriber(ctx context.Context, uri string) (Subscriber, error) {
 	u, err := url.Parse(uri)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to parse URI, %w", err)
 	}
 
 	q := u.Query()
 
-	host := q.Get("host")
-	port := q.Get("port")
+	host := pubsub.REDIS_DEFAULT_HOST
+	port := pubsub.REDIS_DEFAULT_PORT
+
+	if q.Has("host") {
+		host = q.Get("host")
+	}
+
+	if q.Has("port") {
+		str_port := q.Get("port")
+
+		v, err := strconv.Atoi(str_port)
+
+		if err != nil {
+			return nil, fmt.Errorf("Failed to parse ?port= parameter, %w", err)
+		}
+
+		port = v
+	}
+
 	channel := q.Get("channel")
 
-	addr := fmt.Sprintf("%s:%s", host, port)
+	if channel == "" {
+		return nil, fmt.Errorf("Empty or missing ?channel= parameter")
+	}
+
+	addr := fmt.Sprintf("%s:%d", host, port)
 
 	redis_client := redis.NewClient(&redis.Options{
 		Addr: addr,

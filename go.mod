@@ -7,6 +7,7 @@ require (
 	github.com/aaronland/go-roster v1.0.0
 	github.com/aws/aws-sdk-go v1.50.23
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/sfomuseum/go-flags v0.10.0
 	gocloud.dev v0.36.0
 )
 
