@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/sfomuseum/go-pubsub"
 )
 
 type RedisSubscriber struct {
@@ -29,13 +30,13 @@ func NewRedisSubscriber(ctx context.Context, uri string) (Subscriber, error) {
 	u, err := url.Parse(uri)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to parse URI, %w", err)
 	}
 
 	q := u.Query()
 
-	host := "localhost"
-	port := 6379
+	host := pubsub.REDIS_DEFAULT_HOST
+	port := pubsub.REDIS_DEFAULT_PORT
 
 	if q.Has("host") {
 		host = q.Get("host")
@@ -52,7 +53,12 @@ func NewRedisSubscriber(ctx context.Context, uri string) (Subscriber, error) {
 
 		port = v
 	}
+
 	channel := q.Get("channel")
+
+	if channel == "" {
+		return nil, fmt.Errorf("Empty or missing ?channel= parameter")
+	}
 
 	addr := fmt.Sprintf("%s:%d", host, port)
 
