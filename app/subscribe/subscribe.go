@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/sfomuseum/go-pubsub/publisher"
 	"github.com/sfomuseum/go-pubsub/subscriber"
 )
 
@@ -35,8 +36,25 @@ func RunWithOptions(ctx context.Context, opts *RunOptions, logger *slog.Logger) 
 
 	defer sub.Close()
 
+	pub, err := publisher.NewPublisher(ctx, opts.PublisherURI)
+
+	if err != nil {
+		return fmt.Errorf("Failed to create new publisher, %v", err)
+	}
+
+	defer pub.Close()
+
 	msg_ch := make(chan string)
 	done_ch := make(chan bool)
+
+	publish := func(ctx context.Context, msg string) {
+
+		err := pub.Publish(ctx, msg)
+
+		if err != nil {
+			logger.Error("Failed to publish message", "error", err)
+		}
+	}
 
 	go func() {
 
@@ -47,7 +65,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions, logger *slog.Logger) 
 			case <-done_ch:
 				return
 			case msg := <-msg_ch:
-				fmt.Println(msg)
+				go publish(ctx, msg)
 			default:
 				//
 			}

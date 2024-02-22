@@ -10,6 +10,7 @@ import (
 
 type RunOptions struct {
 	SubscriberURI string
+	PublisherURI  string
 }
 
 func OptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, error) {
@@ -24,6 +25,7 @@ func OptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, err
 
 	opts := &RunOptions{
 		SubscriberURI: subscriber_uri,
+		PublisherURI:  publisher_uri,
 	}
 
 	return opts, nil
