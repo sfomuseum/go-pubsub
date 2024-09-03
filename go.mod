@@ -1,5 +1,29 @@
 module github.com/sfomuseum/go-pubsub
 
+/*
+
+This needs to be updated to use aws-sdk-go-v2 but AWS has removed tags that gocloud.dev
+depends on... or something?
+
+go: downloading github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.17
+go: downloading github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.17
+go: github.com/sfomuseum/go-pubsub/publisher imports
+	gocloud.dev/pubsub/awssnssqs imports
+	github.com/aws/aws-sdk-go-v2/service/sns: reading github.com/aws/aws-sdk-go-v2/service/sns/go.mod at revision service/sns/v1.31.3: unknown revision refs/tags/service/sns/v1.31.3
+go: github.com/sfomuseum/go-pubsub/publisher imports
+	gocloud.dev/pubsub/awssnssqs imports
+	github.com/aws/aws-sdk-go-v2/service/sns/types: reading github.com/aws/aws-sdk-go-v2/service/sns/go.mod at revision service/sns/v1.31.3: unknown revision refs/tags/service/sns/v1.31.3
+go: github.com/sfomuseum/go-pubsub/publisher imports
+	gocloud.dev/pubsub tested by
+	gocloud.dev/pubsub.test imports
+	cloud.google.com/go/pubsub/apiv1: reading cloud.google.com/go/pubsub/go.mod at revision pubsub/v1.41.0: unknown revision refs/tags/pubsub/v1.41.0
+go: github.com/sfomuseum/go-pubsub/publisher imports
+	gocloud.dev/pubsub tested by
+	gocloud.dev/pubsub.test imports
+	cloud.google.com/go/pubsub/apiv1/pubsubpb: reading cloud.google.com/go/pubsub/go.mod at revision pubsub/v1.41.0: unknown revision refs/tags/pubsub/v1.41.0
+
+*/
+
 go 1.21
 
 replace github.com/hpcloud/tail v1.0.0 => github.com/sfomuseum/tail v1.0.2
