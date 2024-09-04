@@ -1,6 +1,7 @@
 package subscriber
 
 // https://gocloud.dev/howto/pubsub/subscribe/
+// ./bin/subscribe -subscriber-uri 'awssqs-creds://?region={REGION}&credentials={CREDENTIALS}&queue-url=https://sqs.{REGION}.amazonaws.com/{ACCOUNT}/{QUEUE}'
 
 import (
 	"context"

@@ -11,7 +11,7 @@ var mode string
 
 func DefaultFlagSet() *flag.FlagSet {
 	fs := flagset.NewFlagSet("publish")
-	fs.StringVar(&publisher_uri, "publisher-uri", "", "...")
-	fs.StringVar(&mode, "mode", "", "...")
+	fs.StringVar(&publisher_uri, "publisher-uri", "", "A valid sfomuseum/go-pubsub/publisher.Publisher URI")
+	fs.StringVar(&mode, "mode", "", "Optional flag to signal whether data should be read for an alternate source. Valid options are: readline, stdin.")
 	return fs
 }

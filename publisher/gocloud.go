@@ -1,5 +1,7 @@
 package publisher
 
+// ./bin/publish -publisher-uri 'awssqs-creds://?region={REGION}&credentials={CREDENTIALS}&queue-url=https://sqs.{REGION}.amazonaws.com/{ACCOUNT}/{QUEUE}' 'hello world'
+
 import (
 	"context"
 	"fmt"
