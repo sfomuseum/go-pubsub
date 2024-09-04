@@ -1,15 +1,15 @@
 module github.com/sfomuseum/go-pubsub
 
-go 1.21.0
+go 1.22.1
 
 toolchain go1.23.0
 
 replace github.com/hpcloud/tail v1.0.0 => github.com/sfomuseum/tail v1.0.2
 
 require (
-	github.com/aaronland/go-aws-session v0.2.1
+	github.com/aaronland/go-aws-auth v1.6.4
 	github.com/aaronland/go-roster v1.0.0
-	github.com/aws/aws-sdk-go v1.55.5
+	github.com/aws/aws-sdk-go-v2/service/sqs v1.34.3
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/hpcloud/tail v1.0.0
 	github.com/sfomuseum/go-flags v0.10.0
@@ -17,7 +17,7 @@ require (
 )
 
 require (
-	github.com/aaronland/go-string v1.0.0 // indirect
+	github.com/aws/aws-sdk-go v1.55.5 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.30.3 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.27.27 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.27 // indirect
@@ -25,10 +25,12 @@ require (
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.15 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.15 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/cognitoidentity v1.25.5 // indirect
+	github.com/aws/aws-sdk-go-v2/service/iam v1.34.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.11.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.11.17 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sns v1.31.3 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sqs v1.34.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssm v1.52.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.22.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.26.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.30.3 // indirect
@@ -36,6 +38,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
+	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/wire v0.6.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.13.0 // indirect

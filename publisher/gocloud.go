@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/url"
 
-	aa_session "github.com/aaronland/go-aws-session"
-	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aaronland/go-aws-auth"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"gocloud.dev/pubsub"
 	"gocloud.dev/pubsub/awssnssqs"
 )
@@ -68,13 +68,14 @@ func NewGoCloudPublisher(ctx context.Context, uri string) (Publisher, error) {
 		credentials := q.Get("credentials")
 		queue_url := q.Get("queue-url")
 
-		cfg, err := aa_session.NewConfigWithCredentialsAndRegion(credentials, region)
+		cfg_uri := fmt.Sprintf("aws://%s?credentials=%s", region, credentials)
+		cfg, err := auth.NewConfig(ctx, cfg_uri)
 
 		if err != nil {
 			return nil, fmt.Errorf("Failed to create new session for credentials '%s', %w", credentials, err)
 		}
 
-		sess, err := session.NewSession(cfg)
+		cl := sqs.NewFromConfig(cfg)
 
 		if err != nil {
 			return nil, fmt.Errorf("Failed to create AWS session, %w", err)
@@ -82,7 +83,7 @@ func NewGoCloudPublisher(ctx context.Context, uri string) (Publisher, error) {
 
 		// https://gocloud.dev/howto/pubsub/publish/#sqs-ctor
 
-		topic = awssnssqs.OpenSQSTopic(ctx, sess, queue_url, nil)
+		topic = awssnssqs.OpenSQSTopicV2(ctx, cl, queue_url, nil)
 
 	default:
 
