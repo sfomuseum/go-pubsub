@@ -42,7 +42,7 @@ func RegisterGoCloudPublishers(ctx context.Context) error {
 		err := RegisterPublisher(ctx, scheme, NewGoCloudPublisher)
 
 		if err != nil {
-			return fmt.Errorf("Failed to register blob writer for '%s', %w", scheme, err)
+			return fmt.Errorf("Failed to register blob publisher for '%s', %w", scheme, err)
 		}
 	}
 
