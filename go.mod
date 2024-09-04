@@ -8,8 +8,8 @@ require (
 	github.com/aaronland/go-aws-auth v1.6.4
 	github.com/aaronland/go-roster v1.0.0
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.34.7
-	github.com/go-redis/redis/v8 v8.11.5
 	github.com/hpcloud/tail v1.0.0
+	github.com/redis/go-redis/v9 v9.6.1
 	github.com/sfomuseum/go-flags v0.10.0
 	gocloud.dev v0.39.0
 )
@@ -52,4 +52,5 @@ require (
 	google.golang.org/grpc v1.65.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
