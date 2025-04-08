@@ -4,3 +4,4 @@ LDFLAGS=-s -w
 cli:
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/publish cmd/publish/main.go
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/subscribe cmd/subscribe/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/pubsubd cmd/pubsubd/main.go
