@@ -7,9 +7,9 @@ replace github.com/hpcloud/tail v1.0.0 => github.com/sfomuseum/tail v1.0.2
 require (
 	github.com/aaronland/go-aws-auth v1.7.0
 	github.com/aaronland/go-roster v1.0.0
-	github.com/aws/aws-sdk-go-v2/service/sqs v1.38.4
+	github.com/aws/aws-sdk-go-v2/service/sqs v1.38.5
 	github.com/hpcloud/tail v1.0.0
-	github.com/redis/go-redis/v9 v9.7.3
+	github.com/redis/go-redis/v9 v9.8.0
 	github.com/sfomuseum/go-flags v0.10.0
 	gocloud.dev v0.41.0
 )
