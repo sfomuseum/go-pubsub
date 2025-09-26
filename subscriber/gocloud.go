@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/aaronland/go-aws-auth/v2"
+	"github.com/aaronland/go-aws/v3/auth"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"gocloud.dev/pubsub"
 	"gocloud.dev/pubsub/awssnssqs"
